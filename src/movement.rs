@@ -57,6 +57,11 @@ pub mod movement {
                 None => {}
             }
         }
+
+        pub fn stop_rotation(&mut self, delta_time: &f32) {
+            self.angular_acc = 0.;
+            self.angular_vel -= (self.angular_vel * 0.5) * delta_time
+        }
     }
 
     #[derive(Component)]

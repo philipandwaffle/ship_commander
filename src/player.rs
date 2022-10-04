@@ -11,20 +11,25 @@ pub mod player {
     #[derive(Component)]
     struct Player;
     pub fn handle_player_inputs(
+        time: Res<Time>,
         input: Res<ControlStatus>,
         pc: Res<PlayerConstants>,
         mut players: Query<(&mut Transform, &mut Movable, &MovementConstraints)>,
     ) {
         for (mut t, mut m, mc) in players.iter_mut() {
             if input.forward {
-                println!("{}", (t.rotation.xyz() * pc.forward_acc).truncate());
-                println!("{}", t.rotation.to_scaled_axis());
-                m.add_acc((t.rotation.xyz() * pc.forward_acc).truncate(), &Some(mc));
+                println!("{}", t.rotation);
+                t.rotation.mul_vec3(Vec3::Y);
+                let foo = t.rotation.mul_vec3(Vec3::Y);
+                println!("{}", foo);
+
+                m.add_acc((t.rotation.mul_vec3(Vec3::Y) * 200.).truncate(), &Some(mc));
             }
-            if input.rotate_left {
+            if !input.rotate_left && !input.rotate_right {
+                m.stop_rotation(&time.delta_seconds());
+            } else if input.rotate_left {
                 m.add_a_acc(pc.angular_acc, &Some(mc));
-            }
-            if input.rotate_right {
+            } else if input.rotate_right {
                 m.add_a_acc(-pc.angular_acc, &Some(mc));
             }
         }

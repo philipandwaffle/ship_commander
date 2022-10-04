@@ -1,78 +1,83 @@
 pub mod input {
-    use bevy::{prelude::{KeyCode, ResMut, Res, Input, Plugin}, render::texture::ImagePlugin, reflect::erased_serde::__private::serde::forward_to_deserialize_any};
+    use std::f32::consts::PI;
+
+    use bevy::{
+        prelude::{Input, KeyCode, Plugin, Res, ResMut},
+        reflect::erased_serde::__private::serde::forward_to_deserialize_any,
+        render::texture::ImagePlugin,
+    };
 
     pub struct InputPlugin;
-    impl Plugin for InputPlugin{
+    impl Plugin for InputPlugin {
         fn build(&self, app: &mut bevy::prelude::App) {
-            app
-                .insert_resource(Bindings::default())
+            app.insert_resource(Bindings::default())
                 .insert_resource(ControlStatus::default())
                 .insert_resource(PlayerConstants::default())
                 .add_system(process_input);
         }
     }
 
-    pub struct PlayerConstants{
-        forward_acc: f32,
-        reverse_acc: f32,
-        max_forward_acc: f32,
-        max_backward_acc: f32,
-        max_forward_vel: f32,
-        max_reverse_vel: f32,
-        angular_acc: f32,
-        max_angular_acc: f32,
-        max_angular_vel: f32,
+    pub struct PlayerConstants {
+        pub forward_acc: f32,
+        pub reverse_acc: f32,
+        pub max_forward_acc: f32,
+        pub max_backward_acc: f32,
+        pub max_forward_vel: f32,
+        pub max_reverse_vel: f32,
+        pub angular_acc: f32,
+        pub max_angular_acc: f32,
+        pub max_angular_vel: f32,
     }
-    impl Default for PlayerConstants{
+    impl Default for PlayerConstants {
         fn default() -> Self {
-            Self { 
+            Self {
                 forward_acc: 5.,
                 reverse_acc: 10.,
                 max_forward_acc: 3.,
                 max_backward_acc: 4.,
                 max_forward_vel: 10.,
                 max_reverse_vel: 5.,
-                angular_acc: 2.,
-                max_angular_acc: 1.,
-                max_angular_vel: 4.,
+                angular_acc: PI / 8.,
+                max_angular_acc: 2. * PI / 8.,
+                max_angular_vel: 4. * PI / 8.,
             }
         }
     }
-    
-    pub struct Bindings{
+
+    pub struct Bindings {
         forward: KeyCode,
         backward: KeyCode,
         rotate_right: KeyCode,
         rotate_left: KeyCode,
         shoot: KeyCode,
     }
-    impl Default for Bindings{
+    impl Default for Bindings {
         fn default() -> Self {
-            Self { 
-                forward: KeyCode::W, 
-                backward: KeyCode::S, 
-                rotate_right: KeyCode::A, 
-                rotate_left: KeyCode::D, 
-                shoot: KeyCode::Space             
+            Self {
+                forward: KeyCode::W,
+                backward: KeyCode::S,
+                rotate_right: KeyCode::D,
+                rotate_left: KeyCode::A,
+                shoot: KeyCode::Space,
             }
         }
     }
 
-    pub struct ControlStatus{
+    pub struct ControlStatus {
         pub forward: bool,
         pub backward: bool,
         pub rotate_right: bool,
         pub rotate_left: bool,
         pub shoot: bool,
     }
-    impl Default for ControlStatus{
+    impl Default for ControlStatus {
         fn default() -> Self {
-            Self { 
-                forward: Default::default(), 
-                backward: Default::default(), 
-                rotate_right: Default::default(), 
-                rotate_left: Default::default(), 
-                shoot: Default::default() 
+            Self {
+                forward: Default::default(),
+                backward: Default::default(),
+                rotate_right: Default::default(),
+                rotate_left: Default::default(),
+                shoot: Default::default(),
             }
         }
     }
@@ -81,7 +86,7 @@ pub mod input {
         input: Res<Input<KeyCode>>,
         bindings: Res<Bindings>,
         mut control_status: ResMut<ControlStatus>,
-    ){
+    ) {
         control_status.forward = input.pressed(bindings.forward);
         control_status.backward = input.pressed(bindings.backward);
         control_status.rotate_right = input.pressed(bindings.rotate_right);

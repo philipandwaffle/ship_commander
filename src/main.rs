@@ -65,6 +65,12 @@ fn spawn_entities(mut commands: Commands) {
         .insert(Movable {
             angular_vel: 0.,
             ..default()
+        })
+        .insert(MovementConstraints {
+            max_acc: 4.,
+            max_vel: 10.,
+            max_a_acc: 2. * PI / 8.,
+            max_a_vel: 4. * PI / 8.,
         });
 }
 

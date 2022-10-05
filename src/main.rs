@@ -13,6 +13,8 @@ use crate::input::input::*;
 
 mod player;
 
+mod propelled_object;
+
 fn main() {
     sandbox();
 

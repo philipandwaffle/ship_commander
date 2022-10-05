@@ -1,5 +1,0 @@
-mod ship{
-    struct Ship{
-        
-    }
-}

@@ -4,7 +4,7 @@ pub mod movement {
         ops::{Add, Mul},
     };
 
-    use bevy::prelude::*;
+    use bevy::{math::vec2, prelude::*};
     #[derive(Component)]
     pub struct Movable {
         pub acc: Vec2,
@@ -61,6 +61,10 @@ pub mod movement {
         pub fn stop_rotation(&mut self, delta_time: &f32) {
             self.angular_acc = 0.;
             self.angular_vel -= (self.angular_vel * 0.5) * delta_time
+        }
+
+        pub fn stop_acc(&mut self) {
+            self.acc = Vec2::ZERO;
         }
     }
 

@@ -90,6 +90,6 @@ pub mod input {
         control_status.backward = input.pressed(bindings.backward);
         control_status.rotate_right = input.pressed(bindings.rotate_right);
         control_status.rotate_left = input.pressed(bindings.rotate_left);
-        control_status.shoot = input.pressed(bindings.shoot);
+        control_status.shoot = input.just_pressed(bindings.shoot);
     }
 }

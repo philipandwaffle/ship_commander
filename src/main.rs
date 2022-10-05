@@ -1,13 +1,15 @@
 use std::f32::consts::PI;
+use std::vec;
 
 use bevy::math::vec2;
 use bevy::{math::vec3, prelude::*};
 use bevy_prototype_lyon::prelude::*;
 use player::player::{handle_player_inputs, Player};
 use propelled_object::propelled_object::{
-    PropulsionConstraints, PropulsionPlugin, PropulsionValues, RotationInput, Ship,
+    Projectile, PropulsionConstraints, PropulsionPlugin, PropulsionValues, RotationInput, Ship,
     TranslationInput,
 };
+use spawner::spawner::SpawnerPlugin;
 
 mod movement;
 use crate::movement::movement::*;
@@ -18,6 +20,8 @@ use crate::input::input::*;
 mod player;
 
 mod propelled_object;
+
+mod spawner;
 
 fn main() {
     sandbox();
@@ -35,6 +39,7 @@ fn main() {
         .add_plugin(ShapePlugin)
         .add_plugin(InputPlugin)
         .add_plugin(PropulsionPlugin)
+        .add_plugin(SpawnerPlugin)
         .add_startup_system(setup_system)
         .add_startup_system(spawn_entities)
         .add_system(movement)
@@ -69,10 +74,7 @@ fn spawn_entities(mut commands: Commands) {
                 ..default()
             },
         ))
-        .insert(Movable {
-            angular_vel: 0.,
-            ..default()
-        })
+        .insert(Movable::default())
         .insert(Ship {
             pc: PropulsionConstraints {
                 max_acc: 4.,
@@ -87,6 +89,19 @@ fn spawn_entities(mut commands: Commands) {
             },
             ti: TranslationInput::Nothing,
             ri: RotationInput::Nothing,
+            ammo: vec![Projectile {
+                pc: PropulsionConstraints {
+                    max_acc: 200000.,
+                    max_vel: 1000.,
+                    max_a_acc: 2. * PI / 8.,
+                    max_a_vel: 4. * PI / 8.,
+                },
+                pv: PropulsionValues {
+                    f_acc: 200000.,
+                    b_acc: 0.,
+                    a_acc: 0.,
+                },
+            }],
         })
         .insert(Player);
 }

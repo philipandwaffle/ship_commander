@@ -3,7 +3,11 @@ use std::f32::consts::PI;
 use bevy::math::vec2;
 use bevy::{math::vec3, prelude::*};
 use bevy_prototype_lyon::prelude::*;
-use player::player::handle_player_inputs;
+use player::player::{handle_player_inputs, Player};
+use propelled_object::propelled_object::{
+    PropulsionConstraints, PropulsionPlugin, PropulsionValues, RotationInput, Ship,
+    TranslationInput,
+};
 
 mod movement;
 use crate::movement::movement::*;
@@ -30,6 +34,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
         .add_plugin(InputPlugin)
+        .add_plugin(PropulsionPlugin)
         .add_startup_system(setup_system)
         .add_startup_system(spawn_entities)
         .add_system(movement)
@@ -68,12 +73,22 @@ fn spawn_entities(mut commands: Commands) {
             angular_vel: 0.,
             ..default()
         })
-        .insert(MovementConstraints {
-            max_acc: 100.,
-            max_vel: 100.,
-            max_a_acc: 2. * PI / 8.,
-            max_a_vel: 4. * PI / 8.,
-        });
+        .insert(Ship {
+            pc: PropulsionConstraints {
+                max_acc: 4.,
+                max_vel: 30.,
+                max_a_acc: 2. * PI / 8.,
+                max_a_vel: 4. * PI / 8.,
+            },
+            pv: PropulsionValues {
+                f_acc: 4.,
+                b_acc: 10.,
+                a_acc: PI / 8.,
+            },
+            ti: TranslationInput::Nothing,
+            ri: RotationInput::Nothing,
+        })
+        .insert(Player);
 }
 
 fn create_reg_poly(sides: usize, radius: f32) -> RegularPolygon {

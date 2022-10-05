@@ -1,36 +1,37 @@
 pub mod player {
-    use std::f32::consts::PI;
+
+    use bevy::prelude::{App, Component, Plugin, Query, Res, With};
 
     use crate::{
-        input::input::{ControlStatus, PlayerConstants},
-        movement::movement::{Movable, MovementConstraints},
+        input::input::ControlStatus,
+        propelled_object::propelled_object::{RotationInput, Ship, TranslationInput},
     };
-    use bevy::{math::vec2, prelude::*};
-    use bevy_prototype_lyon::plugin;
 
     #[derive(Component)]
-    struct Player;
+    pub struct Player;
     pub fn handle_player_inputs(
-        time: Res<Time>,
         input: Res<ControlStatus>,
-        pc: Res<PlayerConstants>,
-        mut players: Query<(&mut Transform, &mut Movable, &MovementConstraints)>,
+        mut players: Query<&mut Ship, With<Player>>,
     ) {
-        for (mut t, mut m, mc) in players.iter_mut() {
-            if input.forward {
-                println!("{}", t.rotation);
-                t.rotation.mul_vec3(Vec3::Y);
-                let foo = t.rotation.mul_vec3(Vec3::Y);
-                println!("{}", foo);
-
-                m.add_acc((t.rotation.mul_vec3(Vec3::Y) * 200.).truncate(), &Some(mc));
+        for mut p in players.iter_mut() {
+            if input.forward && input.backward {
+                p.ti = TranslationInput::Nothing;
+            } else if input.forward {
+                p.ti = TranslationInput::Forward;
+            } else if input.backward {
+                p.ti = TranslationInput::Backward;
+            } else {
+                p.ti = TranslationInput::Nothing;
             }
-            if !input.rotate_left && !input.rotate_right {
-                m.stop_rotation(&time.delta_seconds());
-            } else if input.rotate_left {
-                m.add_a_acc(pc.angular_acc, &Some(mc));
+
+            if input.rotate_left && input.rotate_right {
+                p.ri = RotationInput::Nothing;
             } else if input.rotate_right {
-                m.add_a_acc(-pc.angular_acc, &Some(mc));
+                p.ri = RotationInput::Right;
+            } else if input.rotate_left {
+                p.ri = RotationInput::Left;
+            } else {
+                p.ri = RotationInput::Nothing;
             }
         }
     }
@@ -38,7 +39,7 @@ pub mod player {
     struct PlayerPlugin;
     impl Plugin for PlayerPlugin {
         fn build(&self, app: &mut App) {
-            todo!()
+            app.add_system(handle_player_inputs);
         }
     }
 }

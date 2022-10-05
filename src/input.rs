@@ -12,37 +12,36 @@ pub mod input {
         fn build(&self, app: &mut bevy::prelude::App) {
             app.insert_resource(Bindings::default())
                 .insert_resource(ControlStatus::default())
-                .insert_resource(PlayerConstants::default())
                 .add_system(process_input);
         }
     }
 
-    pub struct PlayerConstants {
-        pub forward_acc: f32,
-        pub reverse_acc: f32,
-        pub max_forward_acc: f32,
-        pub max_backward_acc: f32,
-        pub max_forward_vel: f32,
-        pub max_reverse_vel: f32,
-        pub angular_acc: f32,
-        pub max_angular_acc: f32,
-        pub max_angular_vel: f32,
-    }
-    impl Default for PlayerConstants {
-        fn default() -> Self {
-            Self {
-                forward_acc: 5.,
-                reverse_acc: 10.,
-                max_forward_acc: 3.,
-                max_backward_acc: 4.,
-                max_forward_vel: 10.,
-                max_reverse_vel: 5.,
-                angular_acc: PI / 8.,
-                max_angular_acc: 2. * PI / 8.,
-                max_angular_vel: 4. * PI / 8.,
-            }
-        }
-    }
+    // pub struct PlayerConstants {
+    //     pub forward_acc: f32,
+    //     pub reverse_acc: f32,
+    //     pub max_forward_acc: f32,
+    //     pub max_backward_acc: f32,
+    //     pub max_forward_vel: f32,
+    //     pub max_reverse_vel: f32,
+    //     pub angular_acc: f32,
+    //     pub max_angular_acc: f32,
+    //     pub max_angular_vel: f32,
+    // }
+    // impl Default for PlayerConstants {
+    //     fn default() -> Self {
+    //         Self {
+    //             forward_acc: 5.,
+    //             reverse_acc: 10.,
+    //             max_forward_acc: 3.,
+    //             max_backward_acc: 4.,
+    //             max_forward_vel: 10.,
+    //             max_reverse_vel: 5.,
+    //             angular_acc: PI / 8.,
+    //             max_angular_acc: 2. * PI / 8.,
+    //             max_angular_vel: 4. * PI / 8.,
+    //         }
+    //     }
+    // }
 
     pub struct Bindings {
         forward: KeyCode,

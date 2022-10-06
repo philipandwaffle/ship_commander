@@ -4,12 +4,13 @@ use std::vec;
 use bevy::math::vec2;
 use bevy::{math::vec3, prelude::*};
 use bevy_prototype_lyon::prelude::*;
+use entity_manager::entity_manager::{DespawnerPlugin, SpawnerPlugin};
 use player::player::{handle_player_inputs, Player};
 use propelled_object::propelled_object::{
     Projectile, PropulsionConstraints, PropulsionPlugin, PropulsionValues, RotationInput, Ship,
     TranslationInput,
 };
-use spawner::spawner::SpawnerPlugin;
+use replicator::replicator::Replicable;
 
 mod movement;
 use crate::movement::movement::*;
@@ -21,7 +22,9 @@ mod player;
 
 mod propelled_object;
 
-mod spawner;
+mod entity_manager;
+
+mod replicator;
 
 fn main() {
     sandbox();
@@ -40,6 +43,7 @@ fn main() {
         .add_plugin(InputPlugin)
         .add_plugin(PropulsionPlugin)
         .add_plugin(SpawnerPlugin)
+        .add_plugin(DespawnerPlugin)
         .add_startup_system(setup_system)
         .add_startup_system(spawn_entities)
         .add_system(movement)
@@ -48,17 +52,13 @@ fn main() {
 }
 
 fn sandbox() {
-    let v = vec2(2., 2.);
-    let up = vec2(0., 1.);
-    let foo = Vec2::from_angle(PI / 4.);
-    println!("{}", v.angle_between(up));
-    println!("{}", foo);
+    let comp_vec: Vec<Box<dyn Replicable>> = vec![];
 }
 
 fn setup_system(mut commands: Commands, mut windows: ResMut<Windows>) {
     // camera
     let mut cam = Camera2dBundle::default();
-    cam.projection.scale = 2.;
+    cam.projection.scale = 10.;
     commands.spawn_bundle(cam);
 }
 

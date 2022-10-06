@@ -1,6 +1,4 @@
 pub mod propelled_object {
-    use std::clone;
-
     use bevy::{
         prelude::{Component, Plugin, Query, Res, Transform, Vec2, Vec3},
         time::Time,
@@ -67,6 +65,11 @@ pub mod propelled_object {
         Nothing,
         Left,
         Right,
+    }
+    pub enum WeaponState {
+        Idle,
+        Cooldown(f32),
+        Firing,
     }
 
     #[derive(Component)]

@@ -1,14 +1,11 @@
 pub mod player {
 
-    use bevy::{
-        prelude::{App, Commands, Component, Plugin, Query, Res, ResMut, Transform, With},
-        transform,
-    };
+    use bevy::prelude::{App, Component, Plugin, Query, ResMut, Transform, With};
 
     use crate::{
+        entity_manager::entity_manager::SpawnList,
         input::input::ControlStatus,
         propelled_object::propelled_object::{RotationInput, Ship, TranslationInput},
-        spawner::spawner::SpawnList,
     };
 
     #[derive(Component)]
@@ -42,7 +39,7 @@ pub mod player {
             if input.shoot {
                 let proj = s.ammo.get(0).unwrap().clone();
                 sl.projectiles
-                    .push_back((t.translation, t.rotation, proj.clone()));
+                    .push_back((t.translation, t.rotation, 0.3, proj.clone()));
                 input.shoot = false;
             }
         }

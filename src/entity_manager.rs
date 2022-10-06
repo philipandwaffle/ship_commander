@@ -1,13 +1,38 @@
-pub mod spawner {
+pub mod entity_manager {
     use std::collections::VecDeque;
 
-    use bevy::prelude::{default, Color, Commands, Plugin, Quat, ResMut, Transform, Vec3};
+    use bevy::{
+        prelude::{
+            default, Color, Commands, Component, Entity, Plugin, Quat, Query, Res, ResMut,
+            Transform, Vec3,
+        },
+        time::Time,
+    };
     use bevy_prototype_lyon::{
         prelude::{DrawMode, FillMode, GeometryBuilder},
         shapes::{self, RegularPolygon, RegularPolygonFeature},
     };
 
     use crate::{movement::movement::Movable, propelled_object::propelled_object::Projectile};
+
+    pub struct DespawnerPlugin;
+    impl Plugin for DespawnerPlugin {
+        fn build(&self, app: &mut bevy::prelude::App) {
+            app.add_system(despawn);
+        }
+    }
+
+    pub fn despawn(
+        mut commands: Commands,
+        time: Res<Time>,
+        despawns: Query<(Entity, &DespawnTime)>,
+    ) {
+        for (e, d) in despawns.iter() {
+            if time.seconds_since_startup() > d.d_time {
+                commands.entity(e).despawn();
+            }
+        }
+    }
 
     pub struct SpawnerPlugin;
     impl Plugin for SpawnerPlugin {
@@ -18,7 +43,7 @@ pub mod spawner {
     }
 
     pub struct SpawnList {
-        pub projectiles: VecDeque<(Vec3, Quat, Projectile)>,
+        pub projectiles: VecDeque<(Vec3, Quat, f64, Projectile)>,
     }
     impl Default for SpawnList {
         fn default() -> Self {
@@ -28,20 +53,20 @@ pub mod spawner {
         }
     }
 
-    pub fn spawn_entities(mut commands: Commands, mut spawns: ResMut<SpawnList>) {
+    pub fn spawn_entities(commands: Commands, mut spawns: ResMut<SpawnList>, time: Res<Time>) {
         if !spawns.projectiles.is_empty() {
-            spawn_projectile(commands, &mut spawns.projectiles);
+            spawn_projectile(commands, &mut spawns.projectiles, &time);
         }
     }
 
     fn spawn_projectile(
         mut commands: Commands,
-        projectiles: &mut VecDeque<(Vec3, Quat, Projectile)>,
+        projectiles: &mut VecDeque<(Vec3, Quat, f64, Projectile)>,
+        time: &Time,
     ) {
         let shape = create_reg_poly(3, 20.);
         while !projectiles.is_empty() {
-            let (t, r, p) = projectiles.pop_front().unwrap();
-
+            let (t, r, dt, p) = projectiles.pop_front().unwrap();
             commands
                 .spawn_bundle(GeometryBuilder::build_as(
                     &shape,
@@ -53,7 +78,10 @@ pub mod spawner {
                     },
                 ))
                 .insert(Movable::default())
-                .insert(p);
+                .insert(p)
+                .insert(DespawnTime {
+                    d_time: time.seconds_since_startup() + dt,
+                });
         }
     }
 
@@ -63,5 +91,10 @@ pub mod spawner {
             feature: RegularPolygonFeature::Radius(radius),
             ..shapes::RegularPolygon::default()
         };
+    }
+
+    #[derive(Component)]
+    pub struct DespawnTime {
+        d_time: f64,
     }
 }

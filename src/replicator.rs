@@ -1,7 +1,7 @@
 pub mod replicator {
-    use bevy::prelude::{Component, Vec2};
+    use std::sync::Arc;
 
-    use crate::entity_manager::entity_manager::SpawnList;
+    use bevy::prelude::{Component, Vec2};
 
     pub trait Replicable {
         fn replicate(&self);
@@ -14,7 +14,7 @@ pub mod replicator {
     }
     #[derive(Component)]
     pub struct Replicator {
-        master_copy: Box<dyn Replicable>,
+        master_copy: Arc<dyn Replicable + Sync + Send>,
         status: Status,
         translation_offset: Vec2,
     }

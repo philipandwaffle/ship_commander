@@ -1,10 +1,12 @@
 pub mod propelled_object {
+    use std::sync::Arc;
+
     use bevy::{
         prelude::{Component, Plugin, Query, Res, Transform, Vec2, Vec3},
         time::Time,
     };
 
-    use crate::movement::movement::Movable;
+    use crate::{movement::movement::Movable, ship_controller::controllers::ShipController};
 
     pub struct PropulsionPlugin;
     impl Plugin for PropulsionPlugin {
@@ -81,6 +83,7 @@ pub mod propelled_object {
         pub ti: TranslationInput,
         pub ri: RotationInput,
         pub ammo: Vec<Projectile>,
+        pub controller: Arc<dyn ShipController + Sync + Send>,
     }
 
     impl Propulsion for Ship {

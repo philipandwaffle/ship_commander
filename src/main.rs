@@ -13,6 +13,7 @@ use propelled_object::propelled_object::{
 use replicator::replicator::Replicable;
 
 mod movement;
+mod ship_controller;
 use crate::movement::movement::*;
 
 mod input;
@@ -102,6 +103,7 @@ fn spawn_entities(mut commands: Commands) {
                     a_acc: 0.,
                 },
             }],
+            controller: ,
         })
         .insert(Player);
 }

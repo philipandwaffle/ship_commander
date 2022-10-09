@@ -36,18 +36,10 @@ pub mod movement {
             self.angular_acc = 0.;
         }
 
-        pub fn apply_acc(&mut self, delta_time: &f32) {
-            self.vel += self.acc * *delta_time;
-            self.angular_vel += self.angular_acc * *delta_time;
+        pub fn apply_acc(&mut self, dt: &f32) {
+            self.vel += self.acc * *dt;
+            self.angular_vel += self.angular_acc * *dt;
         }
-    }
-
-    #[derive(Component)]
-    pub struct MovementConstraints {
-        pub max_acc: f32,
-        pub max_vel: f32,
-        pub max_a_acc: f32,
-        pub max_a_vel: f32,
     }
 
     pub fn movement(time: Res<Time>, mut movables: Query<(&mut Transform, &mut Movable)>) {

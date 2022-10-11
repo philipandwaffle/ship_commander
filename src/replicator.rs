@@ -1,7 +1,10 @@
 pub mod replicator {
     use std::sync::Arc;
 
-    use bevy::prelude::{Component, Vec2};
+    use bevy::prelude::{Component, Query, ResMut, Transform, Vec2};
+    use bevy_prototype_lyon::prelude::tess::math::Translation;
+
+    use crate::entity_manager::entity_manager::SpawnList;
 
     pub trait Replicable {
         fn replicate(&self);
@@ -21,6 +24,11 @@ pub mod replicator {
     impl Replicator {
         fn replicate_master(&self) {
             self.master_copy.replicate();
+        }
+    }
+    fn process_replicators(sl: ResMut<SpawnList>, replicators: Query<(&Transform, &Replicator)>) {
+        for (t, r) in replicators.iter() {
+            
         }
     }
 }

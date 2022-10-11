@@ -6,7 +6,10 @@ pub mod propelled_object {
         time::Time,
     };
 
-    use crate::{movement::movement::Movable, ship_controller::controllers::ShipController};
+    use crate::{
+        movement::movement::Movable, replicator::replicator::Replicable,
+        ship_controller::controllers::ShipController,
+    };
 
     pub struct PropulsionPlugin;
     impl Plugin for PropulsionPlugin {
@@ -144,6 +147,11 @@ pub mod propelled_object {
                 pc: self.pc.clone(),
                 pv: self.pv.clone(),
             }
+        }
+    }
+    impl Replicable for Projectile {
+        fn replicate(&self) {
+            todo!()
         }
     }
 

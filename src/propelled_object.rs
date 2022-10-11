@@ -83,7 +83,7 @@ pub mod propelled_object {
         pub ti: TranslationInput,
         pub ri: RotationInput,
         pub ammo: Vec<Projectile>,
-        pub controller: Arc<dyn ShipController + Sync + Send>,
+        pub controller: Option<Arc<dyn ShipController + Sync + Send>>,
     }
 
     impl Propulsion for Ship {

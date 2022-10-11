@@ -19,6 +19,8 @@ pub mod replicator {
         translation_offset: Vec2,
     }
     impl Replicator {
-        fn replicate_master() {}
+        fn replicate_master(&self) {
+            self.master_copy.replicate();
+        }
     }
 }

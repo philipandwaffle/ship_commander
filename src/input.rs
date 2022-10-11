@@ -1,12 +1,12 @@
 pub mod input {
     use bevy::prelude::{Input, KeyCode, Plugin, Res, ResMut};
 
-    pub struct InputPlugin;
-    impl Plugin for InputPlugin {
+    pub struct PlayerInputPlugin;
+    impl Plugin for PlayerInputPlugin {
         fn build(&self, app: &mut bevy::prelude::App) {
             app.insert_resource(Bindings::default())
                 .insert_resource(ControlStatus::default())
-                .add_system(process_input);
+                .add_system(process_player_input);
         }
     }
 
@@ -48,7 +48,7 @@ pub mod input {
         }
     }
 
-    pub fn process_input(
+    pub fn process_player_input(
         input: Res<Input<KeyCode>>,
         bindings: Res<Bindings>,
         mut control_status: ResMut<ControlStatus>,

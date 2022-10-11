@@ -2,6 +2,7 @@ pub mod entity_manager {
     use std::collections::VecDeque;
 
     use bevy::{
+        ecs::component::{ComponentStorage, TableStorage},
         prelude::{
             default, Color, Commands, Component, Entity, Plugin, Quat, Query, Res, ResMut,
             Transform, Vec3,
@@ -96,5 +97,15 @@ pub mod entity_manager {
     #[derive(Component)]
     pub struct DespawnTime {
         d_time: f64,
+    }
+
+    fn spawn_from_component_vec(
+        mut commands: Commands,
+        comp_vec: Vec<Box<dyn Component<Storage = TableStorage>>>,
+    ) {
+        let foo = commands.spawn();
+        for comp in comp_vec {
+            foo.insert(comp);
+        }
     }
 }

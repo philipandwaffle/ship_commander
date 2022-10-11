@@ -41,7 +41,7 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_plugin(ShapePlugin)
-        .add_plugin(InputPlugin)
+        .add_plugin(PlayerInputPlugin)
         .add_plugin(PropulsionPlugin)
         .add_plugin(SpawnerPlugin)
         .add_plugin(DespawnerPlugin)
@@ -103,7 +103,7 @@ fn spawn_entities(mut commands: Commands) {
                     a_acc: 0.,
                 },
             }],
-            controller: ,
+            controller: None,
         })
         .insert(Player);
 }

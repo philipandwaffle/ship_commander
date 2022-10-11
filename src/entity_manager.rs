@@ -14,7 +14,10 @@ pub mod entity_manager {
         shapes::{self, RegularPolygon, RegularPolygonFeature},
     };
 
-    use crate::{movement::movement::Movable, propelled_object::propelled_object::Projectile};
+    use crate::{
+        movement::movement::Movable, propelled_object::propelled_object::Projectile,
+        replicator::replicator::Replicable,
+    };
 
     pub struct DespawnerPlugin;
     impl Plugin for DespawnerPlugin {
@@ -39,35 +42,28 @@ pub mod entity_manager {
     impl Plugin for SpawnerPlugin {
         fn build(&self, app: &mut bevy::prelude::App) {
             app.insert_resource(SpawnList::default())
-                .add_system(spawn_entities);
+                .add_system(spawn_projectile)
+                .add_system(spawn_replicable);
         }
     }
 
     pub struct SpawnList {
         pub projectiles: VecDeque<(Vec3, Quat, f64, Projectile)>,
+        pub replicables: VecDeque<Box<dyn Replicable + Send + Sync>>,
     }
     impl Default for SpawnList {
         fn default() -> Self {
             Self {
                 projectiles: VecDeque::new(),
+                replicables: VecDeque::new(),
             }
         }
     }
 
-    pub fn spawn_entities(commands: Commands, mut spawns: ResMut<SpawnList>, time: Res<Time>) {
-        if !spawns.projectiles.is_empty() {
-            spawn_projectile(commands, &mut spawns.projectiles, &time);
-        }
-    }
-
-    fn spawn_projectile(
-        mut commands: Commands,
-        projectiles: &mut VecDeque<(Vec3, Quat, f64, Projectile)>,
-        time: &Time,
-    ) {
+    fn spawn_projectile(mut commands: Commands, mut spawns: ResMut<SpawnList>, time: Res<Time>) {
         let shape = create_reg_poly(3, 20.);
-        while !projectiles.is_empty() {
-            let (t, r, dt, p) = projectiles.pop_front().unwrap();
+        while !spawns.projectiles.is_empty() {
+            let (t, r, dt, p) = spawns.projectiles.pop_front().unwrap();
             commands
                 .spawn_bundle(GeometryBuilder::build_as(
                     &shape,
@@ -99,13 +95,9 @@ pub mod entity_manager {
         d_time: f64,
     }
 
-    fn spawn_from_component_vec(
-        mut commands: Commands,
-        comp_vec: Vec<Box<dyn Component<Storage = TableStorage>>>,
-    ) {
-        let foo = commands.spawn();
-        for comp in comp_vec {
-            foo.insert(comp);
+    fn spawn_replicable(mut commands: Commands, mut spawns: ResMut<SpawnList>) {
+        while !spawns.replicables.is_empty() {
+            commands.spawn_bundle(spawns.replicables.pop_front().unwrap().replicate());
         }
     }
 }
